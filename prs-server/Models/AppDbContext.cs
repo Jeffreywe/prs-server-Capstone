@@ -8,7 +8,8 @@ namespace prs_server.Models {
     public class AppDbContext : DbContext {
 
         public virtual DbSet<User> Users { get; set; }
-        //public virtual DbSet<Vendor> Vendors { get; set; }
+        public virtual DbSet<Vendor> Vendors { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) 
             : base(options) { }
@@ -19,11 +20,16 @@ namespace prs_server.Models {
                 a.HasIndex(p => p.Username)
                         .IsUnique(true);
             });
-/*
+
             builder.Entity<Vendor>(c => { // makes code unique
                 c.HasIndex(d => d.Code)
                         .IsUnique(true);
-            });*/
+            });
+            
+            builder.Entity<Product>(v => {
+                v.HasIndex(o => o.PartNbr)
+                        .IsUnique(true);
+            });
         }
     }
 }
