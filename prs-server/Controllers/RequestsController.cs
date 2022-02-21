@@ -26,19 +26,19 @@ namespace prs_server.Controllers
 
         // gets all requests in review status
         // GET: api/requests/review/id
-        [HttpGet("review/{userId}")] 
-        public async Task<ActionResult<IEnumerable<Request>>> GetRequestsAsReview(int userId) {
+        [HttpGet("review/{Id}")] 
+        public async Task<ActionResult<IEnumerable<Request>>> GetRequestsAsReview(int Id) {
             var requests = await _context.Requests
                             .Where(x => x.Status == "REVIEW"
-                            && x.Id != userId)
+                            && x.Id != Id)
                             .ToListAsync();
             return requests;
         }
 
-        // sets reviewed if total greater than 51
+        // sets review if total <= 50
         // PUT: api/requests/id/review
         [HttpPut("{id}/request")]
-        public async Task<ActionResult<Request>> SetReview(int userId, Request request) {
+        public async Task<IActionResult> SetReview(int Id, Request request) {
 
             if (request.Total <= 50) {
                 request.Status = "APPROVED";
@@ -46,33 +46,26 @@ namespace prs_server.Controllers
                 request.Status = "REVIEW";
             }
 
-            _context.Entry(request).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return Ok();
+            return await PutRequest(Id, request);
             }
 
         // sets approved
         // PUT: api/requests/id/setApproved
         [HttpPut("{id}/setApproved")]
-        public async Task<ActionResult<Request>> SetApproved(int userId, Request request) {
+        public async Task<IActionResult> SetApproved(int Id, Request request) {
             request.Status = "APPROVED";
 
-            _context.Entry(request).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return Ok();
+            return await PutRequest(Id, request);
         }
 
         // sets rejected
         // PUT: api/requests/id/setRejected
         [HttpPut("{id}/setRejected")]
-        public async Task<ActionResult<Request>> SetRejected(int userId, Request request) {
+        public async Task<IActionResult> SetRejected(int Id, Request request) {
             request.Status = "REJECTED";
 
-            _context.Entry(request).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return Ok();
-        } // do we need to add more code to force the user to add a rejection reason? when a request is rejected?
-        // do we need to add more code to deny the user from making changes to the total/status?
+            return await PutRequest(Id, request);
+        } 
 
 
 

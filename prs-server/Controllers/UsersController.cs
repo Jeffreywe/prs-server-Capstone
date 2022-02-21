@@ -21,10 +21,13 @@ namespace prs_server.Controllers
         // GET: api/users/username/password
         [HttpGet("{username}/{password}")] // connects username and password to each other to get the end result
         public async Task<ActionResult<User>> Login(string username, string password) {
-           return await _context.Users
+           var user =  await _context.Users
                         .SingleOrDefaultAsync(x => x.Username == username
                                                 && x.Password == password);
-            
+            if(user == null) {
+                return NotFound();
+            }
+            return user;
         }
 
         // GET: api/Users
