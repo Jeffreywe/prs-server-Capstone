@@ -30,7 +30,7 @@ namespace prs_server.Controllers
         public async Task<ActionResult<IEnumerable<Request>>> GetRequestsAsReview(int userId) {
             var requests = await _context.Requests
                             .Where(x => x.Status == "REVIEW"
-                            && x.UserId != userId)
+                            && x.Id != userId)
                             .ToListAsync();
             return requests;
         }
