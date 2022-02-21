@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace prs_server.Models {
@@ -23,7 +24,10 @@ namespace prs_server.Models {
         public decimal Total { get; set; }
 
         public int UserId { get; set; }
+        [JsonIgnore]
         public virtual User User { get; set; }
+
+        public virtual IEnumerable<RequestLine> RequestLines { get; set; }
 
         public Request() { }
     }

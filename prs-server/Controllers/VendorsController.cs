@@ -22,7 +22,9 @@ namespace prs_server.Controllers
         // GET: api/Vendors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vendor>>> GetVendors() {
-            return await _context.Vendors.ToListAsync();
+            return await _context.Vendors
+                                    .Include(x => x.Products)
+                                    .ToListAsync();
         }
 
 
@@ -30,7 +32,9 @@ namespace prs_server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Vendor>> GetVendor(int id)
         {
-            var vendor = await _context.Vendors.FindAsync(id);
+            var vendor = await _context.Vendors
+                                            .Include(x => x.Products)
+                                            .SingleOrDefaultAsync(x => x.Id == id);
 
             if (vendor == null)
             {
