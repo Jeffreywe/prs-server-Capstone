@@ -74,7 +74,10 @@ namespace prs_server.Controllers
                     sortedLines.Add(bo.Id, poline);
                 }
                 sortedLines[bo.Id].Quantity += bo.Quantity;
+                sortedLines[bo.Id].LineTotal = sortedLines[bo.Id].Quantity * sortedLines[bo.Id].Price;
             }
+
+            
             
             var pizza = sortedLines.Values.Sum(x => x.LineTotal);
 
