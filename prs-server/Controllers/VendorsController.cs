@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,80 @@ namespace prs_server.Controllers
         public VendorsController(AppDbContext context) {
             _context = context;
         }
+
+        //// Mostly Finished? not returning anything tho
+        //[HttpGet("po/{vendorId}")]
+        //public async Task<ActionResult<IEnumerable<Vendor>>> PO(int vendorId) {
+        //    var vendor = await _context.Vendors
+        //                            .FindAsync(vendorId);
+
+        //    var bob = (from v in _context.Vendors
+        //               join p in _context.Products
+        //               on v.Id equals p.VendorId
+        //               join rl in _context.RequestLines
+        //               on p.Id equals rl.ProductId
+        //               join r in _context.Requests
+        //               on rl.RequestId equals r.Id
+        //               where r.Status == "APPROVED"
+        //               select new {
+        //                   p, rl, r
+        //               });
+        //    return new List<Vendor>();
+        //}
+        
+
+        [HttpGet("po/{vendorId}")]
+        public async Task<ActionResult<Po>> CreatePo(int vendorId) {
+            var vendor = await _context.Vendors.FindAsync(vendorId);//SingleOrDefaultAsync(x => x.Id == vendorId);
+
+            var bob = (from v in _context.Vendors
+                      join p in _context.Products
+                      on v.Id equals p.VendorId
+                      join rl in _context.RequestLines
+                      on p.Id equals rl.ProductId
+                      join r in _context.Requests
+                      on rl.RequestId equals r.Id
+                      where r.Status == "APPROVED"
+                      && v.Id == vendorId
+                      select new {
+                          p.Id,
+                          Product = p.Name,
+                          rl.Quantity,
+                          p.Price,
+                          LineTotal = p.Price * rl.Quantity
+                      });
+
+            var sortedLines = new SortedList<int, Poline>();
+            foreach(var bo in bob) {
+                if (!sortedLines.ContainsKey(bo.Id)) {
+                    var poline = new Poline() {
+                        Product = bo.Product,
+                        Quantity = 0,
+                        Price = bo.Price,
+                        LineTotal = bo.LineTotal
+                    };
+                    sortedLines.Add(bo.Id, poline);
+                }
+                sortedLines[bo.Id].Quantity += bo.Quantity;
+            }
+            
+            var pizza = sortedLines.Values.Sum(x => x.LineTotal);
+
+            var pizzalist = new Po() {
+                Vendor = vendor,
+                Polines = sortedLines.Values,
+                PoTotal = pizza
+            };
+            return pizzalist;
+        }
+
+
+
+
+
+
+
+
 
         // GET: api/Vendors
         [HttpGet]

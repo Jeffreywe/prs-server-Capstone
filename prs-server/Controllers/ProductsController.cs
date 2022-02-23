@@ -20,6 +20,8 @@ namespace prs_server.Controllers
             _context = context;
         }
 
+        // Custom method, Po?? Not sure what it is but gonna try and write it out to see if I can figure out what its doing, think it is similar to our recaculate method in the requestlinesCont
+        
         // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
